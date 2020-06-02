@@ -24,7 +24,7 @@ class RealmActivity(var realm: Realm? = null) : AppCompatActivity() {
         realm = Realm.getInstance(config)
         Log.d(null, "realm path: " + realm?.path)
 
-        // get the movie title that was set
+        // get the "params" from the intent
         val sqlMethod = intent.getStringExtra(METHOD_MESSAGE)
         val title = intent.getStringExtra(TITLE_MESSAGE)
         val year = intent.getStringExtra(YEAR_MESSAGE)
@@ -45,12 +45,10 @@ class RealmActivity(var realm: Realm? = null) : AppCompatActivity() {
         }
     }
 
-    // rejects duplicates based on title (primary key)
-    // not really realistic i.e. Lion King (1994) & Lion King (2019)
     private fun insertMovie(title: String?, year: String?) {
         val result = findViewById<TextView>(R.id.resultText)
         try {
-            // all columns must be present
+            // all columns must be present to insert
             if (!title?.isEmpty()!! && !year?.isEmpty()!!) {
                 realm?.executeTransaction { realm ->
                     val movie = realm.createObject<Movie>(title)
@@ -65,6 +63,8 @@ class RealmActivity(var realm: Realm? = null) : AppCompatActivity() {
                 }
             }
         } catch (e: RealmPrimaryKeyConstraintException) {
+            // rejects duplicates based on title (primary key)
+            // not really realistic i.e. Lion King (1994) & Lion King (2019)
             result.apply {
                 text = getString(R.string.insert_duplicate, title)
             }
@@ -80,6 +80,7 @@ class RealmActivity(var realm: Realm? = null) : AppCompatActivity() {
                 text = getString(R.string.select_result, "No movies found matching that query.")
             }
         } else {
+            // print results
             result.apply {
                 val resString = printQueryResults(returned)
                 text = getString(R.string.select_result, resString)
@@ -89,9 +90,7 @@ class RealmActivity(var realm: Realm? = null) : AppCompatActivity() {
     }
 
     private fun updateMovies(title: String?, year: String?) {
-        val actionResult = findViewById<TextView>(R.id.resultText).apply {
-            text = getString(R.string.insert_result, title, year)
-        }
+        // TODO
     }
     private fun deleteMovies(title: String?, year: String?) {
         val result = findViewById<TextView>(R.id.resultText)
@@ -104,32 +103,40 @@ class RealmActivity(var realm: Realm? = null) : AppCompatActivity() {
         } else {
             val resString = printQueryResults(returned)
             realm?.beginTransaction()
+            // delete each row
             for (res in returned) {
                 res.deleteFromRealm()
             }
             realm?.commitTransaction()
+            // print out the rows that were deleted
             result.apply {
                 text = getString(R.string.delete_result, resString)
             }
         }
     }
 
+    // used in insert, update, and remove
+    // returns a RealmResults containing matching rows
     private fun getQueryResults(title: String?, year: String?): RealmResults<Movie>? {
         var returned: RealmResults<Movie>?
 
+        // both title and year are given
         if (!title?.isEmpty()!! && !year?.isEmpty()!!) {
             returned = realm?.where<Movie>()
                 ?.equalTo("title", title)
                 ?.equalTo("year", Integer.parseInt(year))
                 ?.findAll()
+        // only year is given
         } else if (title.isEmpty() && !year?.isEmpty()!!) {
             returned = realm?.where<Movie>()
                 ?.equalTo("year", Integer.parseInt(year))
                 ?.findAll()
+        // only title is given
         } else if (!title.isEmpty() && year?.isEmpty()!!) {
             returned = realm?.where<Movie>()
                 ?.equalTo("title", title)
                 ?.findAll()
+        // empty search
         } else {
             return null;
         }
@@ -137,6 +144,7 @@ class RealmActivity(var realm: Realm? = null) : AppCompatActivity() {
         return returned;
     }
 
+    // Pretty print the list of rows
     private fun printQueryResults(returned: RealmResults<Movie>): String {
         var resString = ""
         if (returned != null) {

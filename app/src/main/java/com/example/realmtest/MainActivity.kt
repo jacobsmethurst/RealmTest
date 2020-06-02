@@ -2,21 +2,17 @@ package com.example.realmtest
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.View
 import android.widget.EditText
-import android.widget.TextView
 import io.realm.Realm
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
-import java.lang.Exception
 
 const val METHOD_MESSAGE = "com.example.realmtest.METHOD"
 const val TITLE_MESSAGE = "com.example.realmtest.TITLE"
 const val YEAR_MESSAGE = "com.example.realmtest.YEAR"
-const val VIEW_MESSAGE = "com.example.realmtest.VIEW"
 const val INSERT = "INSERT"
 const val SELECT = "SELECT"
 const val UPDATE = "UPDATE"
@@ -46,44 +42,29 @@ class MainActivity : AppCompatActivity() {
         return false
     }
 
+    // called after any button is pushed
     fun performAction(view: View) {
-        // insert movie into Realm db
-        Log.d(null,"clicked insert")
+        val title = getTitleInput()
+        val year = getYearInput()
 
-//        try {
-            val title = getTitleInput()
-            val year = getYearInput()
-            val intent = Intent(this, RealmActivity::class.java).apply {
-                putExtra(TITLE_MESSAGE, title)
-                putExtra(YEAR_MESSAGE, year)
-            }
+        val intent = Intent(this, RealmActivity::class.java).apply {
+            putExtra(TITLE_MESSAGE, title)
+            putExtra(YEAR_MESSAGE, year)
+        }
 
-            val sqlMethod = when (view.id) {
-                R.id.selectButton -> SELECT
-                R.id.updateButton -> UPDATE
-                R.id.deleteButton -> DELETE
-                R.id.clearButton -> CLEAR
-                else -> INSERT
-            }
-            intent.apply {
-                putExtra(METHOD_MESSAGE, sqlMethod)
-            }
-            startActivity(intent)
-//        } catch (e: Exception) { // would make this more robust in a real app :)
-//            if (view.id == R.id.clearButton) {
-//                val intent = Intent(this, RealmActivity::class.java).apply {
-//                    putExtra(TITLE_MESSAGE, "")
-//                    putExtra(YEAR_MESSAGE, 0)
-//                    putExtra(METHOD_MESSAGE, CLEAR)
-//                }
-//                startActivity(intent)
-//            } else {
-//                Log.e(null, e.message, e)
-//                val invalidText = findViewById<TextView>(R.id.invalidText)
-//                invalidText.visibility = View.VISIBLE
-//            }
-//        }
-
+        val sqlMethod = when (view.id) {
+            R.id.selectButton -> SELECT
+            R.id.updateButton -> UPDATE
+            R.id.deleteButton -> DELETE
+            R.id.clearButton -> CLEAR
+            else -> INSERT
+        }
+        intent.apply {
+            putExtra(METHOD_MESSAGE, sqlMethod)
+        }
+        // a different implementation could work in the same activity, or have different activities
+        // for each method. Not really sure which is best for this app
+        startActivity(intent)
     }
 
     private fun getTitleInput(): String {
