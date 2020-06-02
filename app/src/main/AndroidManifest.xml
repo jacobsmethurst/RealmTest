@@ -9,10 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SelectMoviesActivity"
-            android:parentActivityName=".MainActivity">
-        </activity>
-        <activity android:name=".InsertMovieActivity"
+        <activity android:name=".RealmActivity"
             android:parentActivityName=".MainActivity">
         </activity>
         <activity
