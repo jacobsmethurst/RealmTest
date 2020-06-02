@@ -147,11 +147,9 @@ class RealmActivity(var realm: Realm? = null) : AppCompatActivity() {
     // Pretty print the list of rows
     private fun printQueryResults(returned: RealmResults<Movie>): String {
         var resString = ""
-        if (returned != null) {
             for (res in returned) {
                 resString += res.toString()
             }
-        }
         return resString
     }
 
