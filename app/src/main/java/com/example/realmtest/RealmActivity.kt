@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
+import com.example.realmtest.model.Movie
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.realm.RealmResults
@@ -11,17 +12,11 @@ import io.realm.exceptions.RealmPrimaryKeyConstraintException
 import io.realm.kotlin.createObject
 import io.realm.kotlin.where
 
-class RealmActivity(var realm: Realm? = null) : AppCompatActivity() {
+class RealmActivity(var realm: Realm? = appRealm) : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_action)
-
-        // set up Realm
-        val config = RealmConfiguration.Builder()
-            .name("movies.realm")
-            .build()
-        realm = Realm.getInstance(config)
         Log.d(null, "realm path: " + realm?.path)
 
         // get the "params" from the intent

@@ -6,9 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.View
 import android.widget.EditText
-import io.realm.Realm
-import io.realm.RealmObject
-import io.realm.annotations.PrimaryKey
 
 const val METHOD_MESSAGE = "com.example.realmtest.METHOD"
 const val TITLE_MESSAGE = "com.example.realmtest.TITLE"
@@ -19,23 +16,12 @@ const val UPDATE = "UPDATE"
 const val DELETE = "DELETE"
 const val CLEAR = "CLEAR"
 
-open class Movie(
-    @PrimaryKey var title: String? = "",
-    var year: Int = 0
-): RealmObject() {
-    override fun toString(): String {
-        return "\n" + this.title + " (" + year + ")"
-    }
-}
-
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
-
-        Realm.init(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
