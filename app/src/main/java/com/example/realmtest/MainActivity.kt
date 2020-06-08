@@ -1,11 +1,11 @@
 package com.example.realmtest
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.View
 import android.widget.EditText
+import com.example.realmtest.databinding.ActivityMainBinding
 
 const val METHOD_MESSAGE = "com.example.realmtest.METHOD"
 const val TITLE_MESSAGE = "com.example.realmtest.TITLE"
@@ -16,12 +16,17 @@ const val UPDATE = "UPDATE"
 const val DELETE = "DELETE"
 const val CLEAR = "CLEAR"
 
-class MainActivity : AppCompatActivity() {
+class MainActivity() : AppCompatActivity() {
+
+    lateinit var binding: ActivityMainBinding
+    lateinit var executor: RealmExecutor
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         setSupportActionBar(findViewById(R.id.toolbar))
+        executor = RealmExecutor(ctxt = this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -33,11 +38,6 @@ class MainActivity : AppCompatActivity() {
         val title = getTitleInput()
         val year = getYearInput()
 
-        val intent = Intent(this, RealmActivity::class.java).apply {
-            putExtra(TITLE_MESSAGE, title)
-            putExtra(YEAR_MESSAGE, year)
-        }
-
         val sqlMethod = when (view.id) {
             R.id.selectButton -> SELECT
             R.id.updateButton -> UPDATE
@@ -45,12 +45,8 @@ class MainActivity : AppCompatActivity() {
             R.id.clearButton -> CLEAR
             else -> INSERT
         }
-        intent.apply {
-            putExtra(METHOD_MESSAGE, sqlMethod)
-        }
-        // a different implementation could work in the same activity, or have different activities
-        // for each method. Not really sure which is best for this app
-        startActivity(intent)
+
+        binding.results = executor.executeQuery(sqlMethod, title, year)
     }
 
     private fun getTitleInput(): String {
